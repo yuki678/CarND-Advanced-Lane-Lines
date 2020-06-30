@@ -85,7 +85,7 @@ def calibrate_camera(nx=9, ny=6, chessboard_files='camera_cal/calibration*.jpg',
 
 # Define a function that takes an image, number of x and y points, 
 # camera matrix and distortion coefficients
-def unwarp_lane(img, nx, ny, mtx, dist, offset, src, is_chart=True):
+def undist_perspective_transform(img, nx, ny, mtx, dist, offset, src, is_chart=True):
     # Use the OpenCV undistort() function to remove distortion
     undist = cv2.undistort(img, mtx, dist, None, mtx)
     # Convert undistorted image to grayscale
@@ -361,7 +361,7 @@ def process_image(image, is_chart=False):
     dist = dist_pickle["dist"]
 
     # 2. Unwarping in an image
-    top_down, M, Minv = unwarp_lane(image, nx, ny, mtx, dist, offset, corners, is_chart)
+    top_down, M, Minv = undist_perspective_transform(image, nx, ny, mtx, dist, offset, corners, is_chart)
 
     # 3. Gradient and Color 
     result_color, result_combined = grad_color_binary(top_down, (170, 255), (20, 100), is_chart)
