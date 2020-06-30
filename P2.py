@@ -89,11 +89,10 @@ def unwarp_lane(img, nx, ny, mtx, dist, offset, src, is_chart=True):
     # Use the OpenCV undistort() function to remove distortion
     undist = cv2.undistort(img, mtx, dist, None, mtx)
     # Convert undistorted image to grayscale
-    gray = cv2.cvtColor(undist, cv2.COLOR_BGR2GRAY)
-    # Search for corners in the grayscaled image
+    # gray = cv2.cvtColor(undist, cv2.COLOR_BGR2GRAY)
     
     # Grab the image shape
-    img_size = (gray.shape[1], gray.shape[0])
+    img_size = (undist.shape[1], undist.shape[0])
 
     # Define the destination based on the offset
     dst = np.float32([[offset, 0], [img_size[0]-offset, 0], 
@@ -105,12 +104,14 @@ def unwarp_lane(img, nx, ny, mtx, dist, offset, src, is_chart=True):
     Minv = cv2.getPerspectiveTransform(dst, src)
 
     if is_chart:
-        f, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 7))
+        f, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(12, 7))
         f.tight_layout()
         ax1.imshow(img)
         ax1.set_title('Original Image', fontsize=20)
-        ax2.imshow(warped)
-        ax2.set_title('Undistorted and Warped Image', fontsize=20)
+        ax2.imshow(undist)
+        ax2.set_title('Undistorted', fontsize=20)
+        ax3.imshow(warped)
+        ax3.set_title('Perspective Transformed', fontsize=20)
         plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
         plt.show()
 
@@ -381,14 +382,14 @@ def process_image(image, is_chart=False):
     return result
 
 # Test Image
-filename = "test6.jpg"
+filename = "test2.jpg"
 image = cv2.imread("input_files/" + filename)
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 result = process_image(image, True)
 write_rgb_image(result, "output_files/" + filename)
 
-# Test Video
-filename = "project_video.mp4"
-clip1 = VideoFileClip("input_files/" + filename)
-clip1_output = clip1.fl_image(process_image)
-clip1_output.write_videofile("output_files/" + filename, audio=False)
+# # Test Video
+# filename = "project_video.mp4"
+# clip1 = VideoFileClip("input_files/" + filename)
+# clip1_output = clip1.fl_image(process_image)
+# clip1_output.write_videofile("output_files/" + filename, audio=False)
